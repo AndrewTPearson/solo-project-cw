@@ -6,7 +6,9 @@ import Layout from "../Layout/Layout";
 import SearchComponent from "../UI/SearchComponent";
 import './MapPage.css'
 import Event from "../Event";
-
+import QueryContext from "../context/queryContext";
+import LoadingContext from "../context/loadingContext";
+import AllEventsContext from "../context/allEventsContext";
 
 function LocationMarker () {
   const [position, setPosition] = useState<L.LatLng | null>(null)
@@ -39,7 +41,9 @@ function LocationMarker () {
 }
 
 const MapPage = () => {
-  const {events, isLoading, query} = useContext(Context);
+  const {events} = useContext(AllEventsContext);
+  const { isLoading} = useContext(LoadingContext);
+  const {query} = useContext(QueryContext);
   var eventPositionIcon = new L.Icon({
     iconUrl: '/Map_marker_events.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',

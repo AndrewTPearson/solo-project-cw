@@ -5,10 +5,13 @@ import { Tabs } from 'antd';
 import EventList from "../EventList";
 import LoadingComponent from "../UI/LoadingComponent";
 import { EventInterface } from "../../types/EventInterface";
+import UserContext from "../context/userContext";
+import AllEventsContext from "../context/allEventsContext";
 
 const MyEventsPage = () => {
 
-  const {events, activeUser} = useContext(Context);
+  const {events} = useContext(AllEventsContext);
+  const {activeUser} = useContext(UserContext);
   const [savedEvents, setSavedEvents] = useState<EventInterface[]>([])
   const [joinedEvents, setJoinedEvents] = useState<EventInterface[]>([])
 
@@ -17,15 +20,17 @@ const MyEventsPage = () => {
 useEffect(() => {
   async function getJoinedEvents(){
     const temp: EventInterface[] = [];
-    await activeUser.joinedEvents.forEach(eventId => {
-      temp.push(events.find(event => +event._id === +eventId));
+    activeUser?.joinedEvents.forEach(eventId => {
+      const eventToAdd = events.find(event => +event._id === +eventId);
+      if (eventToAdd) temp.push(eventToAdd);
     })
     setJoinedEvents(temp)
   }
   async function getSavedEvents(){
     const temp: EventInterface[] = [];
-    await activeUser.savedEvents.forEach(eventId => {
-      temp.push(events.find(event => +event._id === +eventId));
+    activeUser?.savedEvents.forEach(eventId => {
+      const eventToAdd = events.find(event => +event._id === +eventId);
+      if (eventToAdd) temp.push(eventToAdd);
     });
     setSavedEvents(temp)
   }

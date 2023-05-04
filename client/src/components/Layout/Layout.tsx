@@ -4,10 +4,13 @@ import Context from "../context/context"
 import Menu from "../Navigation/Menu"
 import LoadingComponent from "../UI/LoadingComponent"
 import HeaderComponent from "./Header"
+import LoadingContext from "../context/loadingContext"
+import UserContext from "../context/userContext"
 
 const Layout = ({children}) => {
 
-  const {isLoading, activeUser} = useContext(Context)
+  const {isLoading} = useContext(LoadingContext)
+  const {activeUser} = useContext(UserContext)
 
   return(
     !isLoading && activeUser ?

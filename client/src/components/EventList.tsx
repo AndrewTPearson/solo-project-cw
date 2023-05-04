@@ -3,9 +3,12 @@ import Context from "./context/context";
 import Event from "./Event";
 import './EventList.css';
 import LoadingComponent from "./UI/LoadingComponent";
+import LoadingContext from "./context/loadingContext";
+import QueryContext from "./context/queryContext";
 
 function EventList ({events, isEventFromOwner = false}) {
-const {isLoading, query} = useContext(Context)
+const {isLoading} = useContext(LoadingContext)
+const {query} = useContext(QueryContext)
 
  return(
   <>

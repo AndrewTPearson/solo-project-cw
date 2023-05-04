@@ -7,10 +7,10 @@ import * as UserService from "../../services/user_service";
 import * as ActiveUserService from "../../services/active_user_service";
 import './Auth.css';
 import { Link } from "react-router-dom";
-
+import NavigationContext from "../context/navigationContext";
 
 const Login = () => {
-  const {navigate, setAuthenticated} = useContext(Context)
+  const {navigate} = useContext(NavigationContext)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [formIsValid, setFormIsValid] = useState(false)

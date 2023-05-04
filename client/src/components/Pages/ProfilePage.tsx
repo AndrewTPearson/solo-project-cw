@@ -12,22 +12,30 @@ import * as ActiveUserService from '../../services/active_user_service';
 import * as UserService from '../../services/user_service';
 import { User } from '../../types/User';
 import { EventInterface } from '../../types/EventInterface';
+import AllEventsContext from "../context/allEventsContext";
+import UserContext from "../context/userContext";
+import AllUsersContext from "../context/allUsersContext";
+import NavigationContext from "../context/navigationContext";
 
 const ProfilePage = () => {
 
-  const {events, users, activeUser, setActiveUser, navigate} = useContext(Context);
+  const {events} = useContext(AllEventsContext);
+  const {users} = useContext(AllUsersContext);
+  const {activeUser, setActiveUser} = useContext(UserContext);
+  const {navigate} = useContext(NavigationContext);
 
   const {state} = useLocation();
   const [user, setUser] = useState<User | null>(null)
   const [isProfileFromActiveUser, setIsProfileFromActiveUser] = useState(false)
-  const [filteredOwnEvents, setFilteredOwnEvents] = useState<Event[]>([])
+  const [filteredOwnEvents, setFilteredOwnEvents] = useState<EventInterface[]>([])
   const [isFriend, setIsFriend] = useState(false);
   const [friendsNumber, setFriendsNumber] = useState(0)
 
   useEffect(() => {
     async function findUserByID (id) {
-      setUser(await users.find(user => user._id === id));
-      if(+activeUser._id === +id) setIsProfileFromActiveUser(true)
+      let newUser = await users.find(user => user._id === id);
+      if (newUser) setUser(newUser);
+      if(activeUser?._id && +activeUser._id === +id) setIsProfileFromActiveUser(true)
     }
     if(users && activeUser){
       findUserByID(state.id)
@@ -37,11 +45,11 @@ const ProfilePage = () => {
   useEffect(() => {
     function filterOwnEvents(){
       if (user && user._id) {
-        setFilteredOwnEvents(events.filter(event => event.owner === user._id))
+        setFilteredOwnEvents(events.filter(event => event.owner === user._id?.$oid))
       }
     }
     if(user && events){
-      if(user.friends.find(friend => +friend === +activeUser._id)){
+      if(user.friends.find(friend => friend === activeUser?._id?.$oid)){
         setIsFriend(true)
       }
       setFriendsNumber(user.friends.length)
@@ -53,14 +61,14 @@ const handleAddFriend = () => {
   if (user && user._id) {
     setIsFriend(true)
     setFriendsNumber(friendsNumber+1)
-    UserService.addFriend(activeUser._id, user._id)
+    UserService.addFriend(activeUser?._id, user._id)
   }
 }
 const handleRemoveFriend = () => {
   if (user && user._id) {
     setIsFriend(false)
     setFriendsNumber(friendsNumber-1)
-    UserService.removeFriend(activeUser._id, user._id)
+    UserService.removeFriend(activeUser?._id, user._id)
   }
 }
 
@@ -74,7 +82,7 @@ const items=[
   {
     key:'1',
     label: (
-      <Button onClick={()=>handleLogout(activeUser.username)}>Logout</Button>
+      <Button onClick={()=>handleLogout(activeUser?.username)}>Logout</Button>
     )
   }
 ]

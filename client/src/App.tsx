@@ -6,6 +6,13 @@ import Login from './components/UserAuth/Login';
 import ProfilePage from './components/Pages/ProfilePage';
 import { useEffect, useState } from 'react';
 import Context from './components/context/context';
+import AllEventsContext from './components/context/allEventsContext';
+import LoadingContext from './components/context/loadingContext';
+import NavigationContext from './components/context/navigationContext';
+import UserContext from './components/context/userContext';
+import QueryContext from './components/context/queryContext';
+import AllUsersContext from './components/context/allUsersContext';
+import UserEventsContext from './components/context/userEventsContext';
 import HomePage from './components/Pages/HomePage';
 import * as EventService from './services/event_service';
 import * as UserService from './services/user_service';
@@ -108,33 +115,47 @@ function App() {
             colorTextPlaceholder: '#8663F3'
           },
         }}>
-    <Context.Provider
-      value={{
-        navigate,
-        setEvents,
-        events,
-        isLoading,
-        users,
-        activeUser,
-        getAllEvents,
-        getActiveUser,
-        setActiveUser,
-        addToSavedEvents,
-        removeSavedEvent,
-        addToJoinedEvents,
-        removeJoinedEvent,
-        setQuery,
-        query}}>
-    <Routes>
-      <Route path="/login" element={<Login />}/>
-      <Route path="/register" element={<Register />}/>
-      <Route path="/profile/:username" element={<ProfilePage />}/>
-      <Route path="/event/:eventtitle" element={<EventPage />}/>
-      <Route path="/mapview" element={<MapPage />}/>
-      <Route path="/myevents" element={<MyEventsPage />}/>
-      <Route path="/" element={<HomePage />}/>
-    </Routes>
-    </Context.Provider>
+    <AllUsersContext.Provider value={{users}}>
+      <AllEventsContext.Provider value={{events, setEvents, getAllEvents}}>
+        <UserContext.Provider value={{activeUser, getActiveUser, setActiveUser}}>
+          <UserEventsContext.Provider value={{addToJoinedEvents, addToSavedEvents, removeJoinedEvent, removeSavedEvent}}>
+            <QueryContext.Provider value={{query, setQuery}}>
+              <NavigationContext.Provider value={navigate}>
+                <LoadingContext.Provider value={{isLoading}}>
+                  <Context.Provider
+                    value={{
+                      navigate,  // navigation
+                      setEvents, // events
+                      events, // events
+                      isLoading, // loading
+                      users,  // ?
+                      activeUser,  // user
+                      getAllEvents,  // events
+                      getActiveUser,  // user
+                      setActiveUser,  // user
+                      addToSavedEvents,  // userevents
+                      removeSavedEvent,  // userevents
+                      addToJoinedEvents,  // userevents
+                      removeJoinedEvent,  // userevents
+                      setQuery,  // query - and also below
+                      query}}>
+                    <Routes>
+                    <Route path="/login" element={<Login />}/>
+                    <Route path="/register" element={<Register />}/>
+                    <Route path="/profile/:username" element={<ProfilePage />}/>
+                    <Route path="/event/:eventtitle" element={<EventPage />}/>
+                    <Route path="/mapview" element={<MapPage />}/>
+                    <Route path="/myevents" element={<MyEventsPage />}/>
+                    <Route path="/" element={<HomePage />}/>
+                    </Routes>
+                  </Context.Provider>
+                </LoadingContext.Provider>
+              </NavigationContext.Provider>
+            </QueryContext.Provider>
+          </UserEventsContext.Provider>
+        </UserContext.Provider>
+      </AllEventsContext.Provider>
+    </AllUsersContext.Provider>
     </ConfigProvider>
   );
 }

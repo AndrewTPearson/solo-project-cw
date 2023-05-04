@@ -2,6 +2,8 @@ import { useState, useContext, useEffect } from "react";
 import InputComponent from "../UI/inputs/InputComponent";
 import { Form  } from "antd";
 import Context from "../context/context";
+import UserContext from "../context/userContext";
+import AllUsersContext from "../context/allUsersContext";
 import SelectInputComponent from "../UI/inputs/SelectInputComponent";
 import ModalComponent from "../UI/ModalComponent";
 import SwitchInputComponent from "../UI/inputs/SwitchInputComponent";
@@ -19,7 +21,8 @@ import{ Option} from '../../types/Option';
 
 const CreateEvent = ({props}) => {
 
-  const {activeUser, users} = useContext(Context);
+  const {activeUser} = useContext(UserContext);
+  const {users} = useContext(AllUsersContext);
 
   const [isLoading, setisLoading] = useState(true);
   const [step, setStep] = useState(0);
@@ -87,10 +90,13 @@ const CreateEvent = ({props}) => {
     function displayUserOptions () {
       let temp: Option[] = []
       users.forEach(option => {
-        temp.push({
-          "label": option.username,
-          "value": option._id
-        })})
+        if (option.username && option._id) {
+          temp.push({
+            "label": option.username,
+            "value": option._id
+          })
+        }
+      })
       setDisplayOptions(temp);
     }
     if(users){
