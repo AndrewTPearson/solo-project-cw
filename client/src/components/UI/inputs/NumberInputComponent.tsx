@@ -1,5 +1,5 @@
 import { InputNumber } from "antd";
-const NumberInputComponent = (props) => {
+const NumberInputComponent = ({props}) => {
 
   return (
     <InputNumber

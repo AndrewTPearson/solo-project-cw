@@ -7,7 +7,6 @@ const TextareaInputComponent = (props) => {
     <Input.TextArea
       id={props.id}
       name={props.name}
-      type={props.type}
       autoSize={props.autoSize}
       required={props.required}
       placeholder={props.placeholder}

@@ -1,19 +1,11 @@
 import { Modal } from "antd";
 import { useState } from "react";
 
-const ModalComponent = (props) => {
+const ModalComponent = ({props, children}) => {
 
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState('Content of the modal');
 
-  // const handleOk = () => {
-  //   setModalText('The modal will be closed after two seconds');
-  //   setConfirmLoading(true);
-  //   setTimeout(() => {
-  //     setOpen(false);
-  //     setConfirmLoading(false);
-  //   }, 2000);
-  // };
   return (
     <>
       <Modal
@@ -26,7 +18,7 @@ const ModalComponent = (props) => {
         width="auto"
         closable={false}
       >
-        <div>{props.children}</div>
+        <div>{children}</div>
 
       </Modal>
     </>

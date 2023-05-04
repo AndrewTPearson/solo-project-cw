@@ -7,10 +7,10 @@ import * as UserService from "../../services/user_service";
 import * as ActiveUserService from "../../services/active_user_service";
 import './Auth.css';
 import { Link } from "react-router-dom";
-
+import NavigationContext from "../context/navigationContext";
 
 const Login = () => {
-  const {navigate, setAuthenticated} = useContext(Context)
+  const {navigate} = useContext(NavigationContext)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [formIsValid, setFormIsValid] = useState(false)
@@ -27,10 +27,9 @@ const Login = () => {
   }
 
   const handleFormSubmit = async() => {
-    await UserService.loginUser(username, password)
-      .then(async(res) => {
-          //await ActiveUserService.setActiveUser(res[0])
-      }).then(() => navigate(`/`) )
+    const res = await UserService.loginUser(username, password);
+    // await ActiveUserService.setActiveUser(res[0]);
+    navigate('/');
   }
 
   return (
@@ -42,25 +41,31 @@ const Login = () => {
         >
        <Form.Item name="username" label="username">
           <InputComponent
-          id="username"
-          name="username"
-          type="text"
-          autoComplete="username"
-          required={true}
-          placeholder="Enter your username"
-          onchange={handleInputChange}/>
+            props={{
+              id: "username",
+              name: "username",
+              type: "text",
+              autoComplete: "username",
+              required: true,
+              placeholder: "Enter your username",
+              onchange: handleInputChange
+            }}
+            />
         </Form.Item>
         <input name="chrome-autofill-dummy1" style={{display:'none'}} disabled/>
 
         <Form.Item name="password" label="password">
           <InputComponent
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="password"
-          required={true}
-          placeholder="Enter your password"
-          onchange={handleInputChange}/>
+            props={{
+              id: "password",
+              name: "password",
+              type: "password",
+              autoComplete: "password",
+              required: true,
+              placeholder: "Enter your password",
+              onchange: handleInputChange
+            }}
+            />
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button type="primary" htmlType="submit">

@@ -1,6 +1,6 @@
 export function sortEvents (data) {
   data.sort(function(a,b){
-    return new Date(a.date) - new Date(b.date) ;
+    return Date.parse(a.date) - Date.parse(b.date) ;
   });
 }
 

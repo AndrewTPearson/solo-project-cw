@@ -23,8 +23,8 @@ const beforeUpload = (file) => {
 
 const UploadInputComponent = (props) => {
   const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState();
-  const [image, setImage] = useState();
+  const [imageUrl, setImageUrl] = useState<string | null>();
+  const [image, setImage] = useState<string | null>();
 
   const handleChange = (e) => {
     const newImage = e.target.files[0];

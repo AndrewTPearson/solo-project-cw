@@ -1,11 +1,14 @@
 import './Event.css';
 import { useContext, useEffect, useState } from "react";
 import Context from "./context/context";
-import {HeartOutlined, HeartFilled, EditFilled} from '@ant-design/icons';
+import {HeartOutlined, HeartFilled, EditFilled} from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-function Event ({link, data, isEventFromOwner, numberUsersJoining}) {
+import AllUsersContext from './context/allUsersContext';
+import UserEventsContext from './context/userEventsContext';
 
-  const {users, addToSavedEvents, removeSavedEvent, getAllEvents, getActiveUser} = useContext(Context);
+function Event ({link, data, isEventFromOwner = false, numberUsersJoining = data.joined.length}) {
+  const {users} = useContext(AllUsersContext);
+  const {addToSavedEvents, removeSavedEvent} = useContext(UserEventsContext);
   const [liked, setLiked] = useState(data.liked)
   const [numberUsersJoiningEvent, setNumberUsersJoiningEvent] = useState(numberUsersJoining ? numberUsersJoining : data.joined.length)
   function getParsedDay (day) {
@@ -42,7 +45,7 @@ function Event ({link, data, isEventFromOwner, numberUsersJoining}) {
       const owner = users.find(user => {
         return user._id === userId
       })
-      return owner.username;
+      return owner?.username;
     }
   }
 

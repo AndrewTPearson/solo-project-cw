@@ -47,44 +47,57 @@ const Register = () => {
         >
        <Form.Item name="username" label="username">
           <InputComponent
-          id="username"
-          name="username"
-          type="text"
-          autoComplete="username"
-          required={true}
-          placeholder="Choose a username"
-          onchange={handleInputChange}/>
+            props={{
+              id: "username",
+              name: "username",
+              type: "text",
+              autoComplete: "username",
+              required: true,
+              placeholder: "Choose a username",
+              onchange: handleInputChange
+            }}
+          />
         </Form.Item>
         <Form.Item name="userAge" label="Age">
           <InputComponent
-          id="userAge"
-          name="userAge"
-          type="number"
-          autoComplete="user age"
-          required={true}
-          placeholder="Enter your age"
-          //TODO: add min-max age
-          onchange={handleInputChange} />
+            props={{
+              id: "userAge",
+              name: "userAge",
+              type: "number",
+              autoComplete: "user age",
+              required: true,
+              placeholder: "Enter your age",
+              //TODO: add min-max age
+              onchange: handleInputChange
+            }}
+           />
         </Form.Item>
         <Form.Item name="password" label="Password">
           <InputComponent
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="password"
-          required={true}
-          placeholder="Enter a password"
-          //TODO: add min-max age
-          onchange={handleInputChange} />
+            props={{
+              id: "password",
+              name: "password",
+              type: "password",
+              autoComplete: "password",
+              required: true,
+              placeholder: "Enter a password",
+              //TODO: add min-max age
+              onchange: handleInputChange
+            }}
+            />
         </Form.Item>
         <Form.Item label="Confirm password" name="confirmPassword">
-          <InputComponent id="confirmPassword"
-            name="confirmPassword"
-            type="password"
-            autoComplete="confirm-password"
-            required={true}
-            placeholder="confirm your password"
-            onChange={handleInputChange}/>
+          <InputComponent 
+            props={{
+              id: "confirmPassword",
+              name: "confirmPassword",
+              type: "password",
+              autoComplete: "confirm-password",
+              required: true,
+              placeholder: "confirm your password",
+              onChange: handleInputChange
+            }}
+            />
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button type="primary" htmlType="submit">

@@ -1,4 +1,6 @@
 export interface Option {
   label: string,
-  value: string
+  value: {
+    $oid: string
+  }
 }

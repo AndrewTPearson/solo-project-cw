@@ -1,13 +1,14 @@
 import { useState, useContext, useEffect } from "react";
 import InputComponent from "../UI/inputs/InputComponent";
-import { Button, Form  } from "antd";
+import { Form  } from "antd";
 import Context from "../context/context";
+import UserContext from "../context/userContext";
+import AllUsersContext from "../context/allUsersContext";
 import SelectInputComponent from "../UI/inputs/SelectInputComponent";
 import ModalComponent from "../UI/ModalComponent";
 import SwitchInputComponent from "../UI/inputs/SwitchInputComponent";
 import NumberInputComponent from "../UI/inputs/NumberInputComponent";
 import './CreateEvent.css'
-import * as EventService from "../../services/event_service";
 import { sendPictureToCloud } from "../../services/cloudinary_service";
 import TextareaInputComponent from "../UI/inputs/TextareaInputComponent";
 import PlacesAutocomplete, {
@@ -15,37 +16,36 @@ import PlacesAutocomplete, {
   getLatLng,
 } from 'react-places-autocomplete';
 import MapComponent from "../UI/MapComponent";
-import { formatEvents } from "../../helpers/formatting_functions";
 import CreateEventModalHeader from './CreateEventModalHeader';
+import{ Option} from '../../types/Option';
 
+const CreateEvent = ({props}) => {
 
-const CreateEvent = (props) => {
-
-  const {activeUser, users, setEvents, events} = useContext(Context);
+  const {activeUser} = useContext(UserContext);
+  const {users} = useContext(AllUsersContext);
 
   const [isLoading, setisLoading] = useState(true);
   const [step, setStep] = useState(0);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [date, setDate] = useState(null);
+  const [date, setDate] = useState<Date | string | null>(null);
   const [location, setLocation] = useState('');
-  const [coordinates, setCoordinates] = useState(null);
-  const [limitAttendees, setLimitAttendees] = useState(null);
+  const [coordinates, setCoordinates] = useState<null | [number, number]>(null);
+  const [limitAttendees, setLimitAttendees] = useState<number| string | null>(null);
   const [visibility, setVisibility] = useState(true);
-  const [invitees, setInvitees] = useState([]);
-  const [hideFrom, sethideFrom] = useState([]);
-  const [imageSelected, setImageSelected] = useState(null);
-  const [tempImageUrl, setTempImageUrl] = useState(null)
-  const [displayOptions, setDisplayOptions] = useState([]);
+  const [invitees, setInvitees] = useState<string[]>([]);
+  const [hideFrom, sethideFrom] = useState<string[]>([]);
+  const [imageSelected, setImageSelected] = useState<File | null>(null);
+  const [tempImageUrl, setTempImageUrl] = useState<string | null>(null)
+  const [displayOptions, setDisplayOptions] = useState<Option[]>([]);
 
-  const [formIsValid, setFormIsValid] = useState(false)
-
-  function handleInputChange (e) {
-    const input = e.target.name;
-    if(input === 'title') setTitle(e.target.value)
-    if(input === 'description') setDescription(e.target.value)
-    if(input === 'date') setDate(e.target.value)
-    if(input === 'limitAttendees') setLimitAttendees(e.target.value)
+  function handleInputChange (e: Event) {
+    const { target } = e;
+    const input = (target as HTMLInputElement).name;
+    if(input === 'title') setTitle((target as HTMLInputElement).value)
+    if(input === 'description') setDescription((target as HTMLInputElement).value)
+    if(input === 'date') setDate((target as HTMLInputElement).value)
+    if(input === 'limitAttendees') setLimitAttendees((target as HTMLInputElement).value)
   }
 
   function handleSwitch(){ setVisibility(!visibility) }
@@ -56,7 +56,6 @@ const CreateEvent = (props) => {
   async function photoUpload (file){
     const formData = new FormData();
     formData.append("my_file", file);
-    // formData.append('upload_preset', 'jy1wbdka');
     await sendPictureToCloud(formData)
     .then(data => {
       return data.public_id;
@@ -79,58 +78,27 @@ const CreateEvent = (props) => {
     else { setStep(step-1) }
   }
 
-  function displayUserOptions () {
-    let temp = []
-    users.forEach(option => {
-      temp.push({
-        "label": option.username,
-        "value": option._id
-      })})
-    setDisplayOptions(temp);
-  }
-
+  
   const handleFormSubmit = async() => {
     //There may be problems when uploading the phots to cloudinary.
     // the addEvent function may not wait for the photo to be uploaded
     const public_id = await photoUpload(imageSelected);
     console.log(public_id)
-
-
-    // const newEvent = {
-    //   owner: activeUser._id,
-    //   title: title,
-    //   description: description,
-    //   date: date,
-    //   location: location,
-    //   coordinates: coordinates,
-    //   image: imageSelected.name ,
-    //   limitAttendees: limitAttendees,
-    //   visibility: visibility,
-    //   invitees: invitees,
-    //   hideFrom: hideFrom
-    // };
-
-    // EventService.addEvent(newEvent).then(()=> {
-    //   const newEvents = [...events, {owner: activeUser._id,
-    //     title: title,
-    //     description: description,
-    //     date: new Date( Date.parse(date)),
-    //     location: location,
-    //     coordinates: coordinates,
-    //     image: imageSelected.name ,
-    //     limitAttendees: limitAttendees,
-    //     visibility: visibility,
-    //     invitees: invitees,
-    //     hideFrom: hideFrom,
-    //     joined: [],
-    //     liked: false
-    //   }]
-    //   setEvents(formatEvents(activeUser, newEvents))
-    //   props.close()
-    // })
   }
-
+  
   useEffect(() => {
+    function displayUserOptions () {
+      let temp: Option[] = []
+      users.forEach(option => {
+        if (option.username && option._id) {
+          temp.push({
+            "label": option.username,
+            "value": option._id
+          })
+        }
+      })
+      setDisplayOptions(temp);
+    }
     if(users){
       displayUserOptions()
     }
@@ -143,9 +111,11 @@ const CreateEvent = (props) => {
   return (
 
     <ModalComponent
-    title="Create new Event"
-    open={props.open}
-    close={props.close}
+      props={{
+        title: "Create new Event",
+        open: props.open,
+        close: props.close
+      }}
     >
       <CreateEventModalHeader step={step} handleStep={handleStep} />
 
@@ -154,24 +124,26 @@ const CreateEvent = (props) => {
         {step === 0 &&
           <>
           <Form
-        name="create-event-first"
-        onFinish={() => handleStep(true)}
-        >
-        <Form.Item
-        name="title"
-        label="Title"
-        >
+            name="create-event-first"
+            onFinish={() => handleStep(true)}
+          >
+          <Form.Item
+            name="title"
+            label="Title"
+          >
           <InputComponent
-          id="title"
-          name="title"
-          type="text"
-          autoComplete="title"
-          required={true}
-          maxLength={220}
-          minLength={4}
-          placeholder="max 220 characters"
-          onchange={handleInputChange}
-          value={title}
+            props={{
+              id: "title",
+              name: "title",
+              type: "text",
+              autoComplete: "title",
+              required: true,
+              maxLength: 220,
+              minLength: 4,
+              placeholder: "max 220 characters",
+              onchange: handleInputChange,
+              value: title
+            }}
           />
         </Form.Item>
 
@@ -194,14 +166,17 @@ const CreateEvent = (props) => {
         <Form.Item name="date" label="Time"
          >
           <InputComponent
-          id="date"
-          name="date"
-          type="datetime-local"
-          autoComplete="date"
-          required={true}
-          placeholder="max 220 characters"
-          onchange={handleInputChange}
-          value={date}/>
+            props={{
+              id: 'date',
+              name: 'date',
+              type: 'datetime-local',
+              autoComplete: 'date',
+              required: true,
+              placeholder: 'max 220 characters',
+              onChange: handleInputChange,
+              value: date
+            }}
+          />
         </Form.Item>
 
         <Form.Item name="location" label="Location">
@@ -255,27 +230,31 @@ const CreateEvent = (props) => {
         </>
 }
 
-
         {step === 1 && <>
         <Form
         name="create-event-second"
         onFinish={() => handleStep(true)}>
         <Form.Item name="limitAttendees" label="Limit Attendees">
           <NumberInputComponent
-          id="limitAttendees"
-          name="limitAttendees"
-          autoComplete="limitAttendees"
-          required={false}
-          placeholder="no limit"
-          onchange={(e)=>{console.log(e);setLimitAttendees(e)}}
+            props={{
+              id: 'limitAttendees',
+              name: "limitAttendees",
+              autoComplete: "limitAttendees",
+              required: false,
+              placeholder: "no limit",
+              onchange: (e)=>{console.log(e);
+                setLimitAttendees(e)}
+            }}
           />
         </Form.Item>
 
         <Form.Item name="visibility" label="Visibility">
           <SwitchInputComponent
-           id="visibility"
-           name="visibility"
-           onchange={handleSwitch}
+            props={{
+              id: 'visibility',
+              name: 'visibility',
+              onChange: handleSwitch
+            }}
           />
         </Form.Item>
 
@@ -317,7 +296,7 @@ const CreateEvent = (props) => {
           <p>{activeUser && activeUser.username}</p>
           <h2 className='title'>{title}</h2>
           <p>{location}</p>
-          <p>{date}</p>
+          <p>{date?.toString()}</p>
         </div>
         <div className="image-display">
         <Form.Item name="image" label="Event Image">
@@ -326,8 +305,10 @@ const CreateEvent = (props) => {
                 id="photo-event-upload"
                 type="file"
                 onChange={(e) => {
-                  setImageSelected(e.target.files[0])
-                  setTempImageUrl(URL.createObjectURL(e.target.files[0]))
+                  if (e.target.files && e.target.files[0]) {
+                    setImageSelected(e.target.files[0])
+                    setTempImageUrl(URL.createObjectURL(e.target.files[0]))
+                  }
                 }}/>
         </Form.Item>
         {tempImageUrl && <img className="preview-image" src={tempImageUrl} alt="tempImage" />}

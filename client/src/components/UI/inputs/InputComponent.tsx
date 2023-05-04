@@ -1,7 +1,7 @@
 import { Input} from 'antd';
 
 
-const InputComponent = (props) => {
+const InputComponent = ({props}) => {
 
   return (
     <Input
